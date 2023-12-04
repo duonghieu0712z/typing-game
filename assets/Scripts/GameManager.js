@@ -7,10 +7,16 @@ cc.Class({
         resultScene: cc.Node,
     },
 
-    activeScene(scene) {
-        [this.registerScene, this.typingScene, this.resultScene].map(
-            (value) => (value.active = value === scene)
-        );
+    activeScene(nextScene) {
+        const scenes = [this.registerScene, this.typingScene, this.resultScene];
+
+        const currentScene = scenes.find((value) => value.active);
+        if (currentScene) {
+            const info = currentScene.getComponent("Scene").getInfo();
+            nextScene.getComponent("Scene").setInfo(info);
+        }
+
+        scenes.map((value) => (value.active = value === nextScene));
     },
 
     activeRegisterScene() {

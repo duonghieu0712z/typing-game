@@ -6,6 +6,7 @@ cc.Class({
     extends: cc.Component,
 
     properties: {
+        word: cc.Label,
         paragraph: cc.Label,
         typing: cc.EditBox,
         countdownTimer: CountdownTimer,
@@ -24,6 +25,7 @@ cc.Class({
 
     generateWords() {
         this._words = randomWords(1000);
+        this.word.string = this._words[0];
         this.paragraph.string = this._words.join(" ");
     },
 
@@ -45,6 +47,7 @@ cc.Class({
     handleTyping(text) {
         if (text === this._words[0]) {
             this._words.shift();
+            this.word.string = this._words[0];
             this.paragraph.string = this._words.join(" ");
             this._correctCount++;
         } else {

@@ -65,7 +65,7 @@ cc.Class({
     },
 
     updateSecond() {
-        this.second.string = Math.trunc(this._countdown).toLocaleString(
+        this.second.string = Math.ceil(this._countdown).toLocaleString(
             "en-US",
             {
                 minimumIntegerDigits: 2,
