@@ -16,9 +16,14 @@ cc.Class({
 
         _isStart: false,
         _countdown: 0,
+        _onResult: () => {},
     },
 
-    onLoad() {
+    onEnable() {
+        this._isStart = false;
+
+        this.filter.fillRange = 0;
+
         this._countdown = this.timer;
         this.updateSecond();
     },
@@ -29,13 +34,22 @@ cc.Class({
         }
     },
 
+    isStart() {
+        return this._isStart;
+    },
+
     startCountdown() {
         this._isStart = true;
+    },
+
+    onResult(callback) {
+        this._onResult = callback;
     },
 
     returnResult() {
         if (this._countdown <= 0) {
             this.gameManager.activeResultScene();
+            this._onResult();
         }
     },
 
@@ -69,7 +83,7 @@ cc.Class({
             "en-US",
             {
                 minimumIntegerDigits: 2,
-            }
+            },
         );
     },
 });

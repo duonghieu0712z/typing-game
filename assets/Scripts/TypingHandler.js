@@ -1,17 +1,19 @@
 const randomWords = require("random-words");
 
 const CountdownTimer = require("CountdownTimer");
+const Result = require("Result");
 
 cc.Class({
     extends: cc.Component,
 
     properties: {
+        resultScene: Result,
+
         word: cc.Label,
         paragraph: cc.Label,
         typing: cc.EditBox,
         countdownTimer: CountdownTimer,
 
-        _isStartCountdown: false,
         _words: [String],
 
         _count: 0,
@@ -19,8 +21,19 @@ cc.Class({
         _wrongCount: 0,
     },
 
-    start() {
+    onLoad() {
+        this.countdownTimer.onResult(() => {
+            this.onResult();
+        });
+    },
+
+    onEnable() {
+        this._count = 0;
+        this._correctCount = 0;
+        this._wrongCount = 0;
+
         this.generateWords();
+        this.typing.string = "";
     },
 
     generateWords() {
@@ -30,30 +43,44 @@ cc.Class({
     },
 
     onTextChanged(text) {
-        if (!this._isStartCountdown && text !== " ") {
+        if (text === " ") {
+            this.resetTyping();
+            return;
+        }
+
+        if (!this.countdownTimer.isStart()) {
             this.countdownTimer.startCountdown();
-            this._isStartCountdown = true;
         }
 
         if (text.endsWith(" ")) {
             this.handleTyping(text.trimEnd());
-
-            this.typing.blur();
-            this.typing.string = "";
-            this.typing.focus();
+            this.resetTyping();
         }
     },
 
     handleTyping(text) {
+        this._count++;
         if (text === this._words[0]) {
-            this._words.shift();
-            this.word.string = this._words[0];
-            this.paragraph.string = this._words.join(" ");
             this._correctCount++;
         } else {
             this._wrongCount++;
         }
-        this._count++;
-        cc.log(this._count, this._correctCount, this._wrongCount);
+
+        this._words.shift();
+        this.word.string = this._words[0];
+        this.paragraph.string = this._words.join(" ");
+    },
+
+    resetTyping() {
+        this.typing.blur();
+        this.typing.string = "";
+        this.typing.focus();
+    },
+
+    onResult() {
+        this.resultScene.setResult({
+            correctWords: this._correctCount,
+            wrongWords: this._wrongCount,
+        });
     },
 });
